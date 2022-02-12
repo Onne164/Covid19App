@@ -1,7 +1,10 @@
+import { Chart } from "chart.js";
+
 export const state = () => ({
   countries: [],
   country: [],
   search: '',
+  filter: [],
   sortingCategories: [
     {name: 'Total Confirmed Asc', field: 'TotalConfirmed', order: 'asc'},
     {name: 'Total Confirmed Desc', field: 'TotalConfirmed', order: 'desc'},
@@ -27,6 +30,9 @@ export const mutations = {
   },
   SET_COUNTRY(state, country) {
     state.country = country;
+  },
+  SET_FILTER(state, filter) {
+    state.country = filter;
   }
 }
 
@@ -45,7 +51,7 @@ export const actions = {
   }).then(response => {
           context.commit('SET_COUNTRY', response.data);
       });
-  }
+  },
 }
 
 export const getters =  {
@@ -78,4 +84,5 @@ export const getters =  {
   deaths(state) {
     return state.country.map(data => data.Deaths);
   },
+
 }

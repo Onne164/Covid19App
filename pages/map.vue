@@ -1,15 +1,37 @@
 <template>
 <div>
-  <v-btn @click="center={lat: 59.4268549, lng:24.7433906}; zoom=19">go to somewhere</v-btn>
+  <v-btn @click="center={lat: 59.464697449279925, lng:24.8273948065468}; zoom=19">go to somewhere</v-btn>
   <v-btn @click="styleProperty='deaths'">Deaths</v-btn>
   <v-btn @click="styleProperty='confirmed'">Confirmed</v-btn>
-  <google-map :center="center" :zoom="zoom" :geoJson="covidGeoJson" :mapStyle="style" :key="styleProperty"></google-map>
+  <v-btn @click="drawMarkers">Draw Markers</v-btn>
+  <v-btn @click="drawDirection">Draw Direction</v-btn>
+  <v-btn @click="clearMap">Clear Map</v-btn>
+  <google-map :center="center" :zoom="zoom" :geoJson="covidGeoJson" :mapStyle="style" :key="styleProperty" :markers="markers"></google-map>
+  <GmapMap
+    :center="center"
+    :zoom="17"
+    map-type-id="terrain"
+    style="width: 1000px; height: 600px"
+  >
+  <GmapMarker
+    :key="index"
+     v-for="(m, index) in markers"
+    :position="m.position"
+    :clickable="true"
+    :draggable="true"
+    @click="center=m.position"
+  />
+  <gmap-polygon :paths="paths"></gmap-polygon>
+</GmapMap>
+
 </div>
 </template>
 
 <script>
-import GoogleMap from "~/components/GoogleMap.vue"
 
+const home = {lat: 58.41, lng: 23.32};
+const work = {lat: 59.464697449279925, lng:24.8273948065468};
+import GoogleMap from "~/components/GoogleMap.vue"
 export default {
   components: { GoogleMap },
   created() {
@@ -21,10 +43,12 @@ export default {
   },
   data() {
     return {
-      center: {lat: 44, lng: 24},
+      center: work,
       zoom: 4,
       geoJson: null,
-      styleProperty: 'confirmed'
+      styleProperty: 'confirmed',
+      markers: [],
+      paths: [],
     }
   },
    computed: {
@@ -69,6 +93,23 @@ export default {
 
   },
   methods: {
+    drawMarkers() {
+      this.markers = [
+        {
+          position: home
+        },
+        {
+          position: work
+        },
+      ]
+    },
+    drawDirection() {
+     this.paths = [home, work];
+    },
+    clearMap() {
+      this.paths =  [];
+      this.markers = [];
+    },
 
     }
 

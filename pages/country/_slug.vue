@@ -2,105 +2,69 @@
 <div>
   <v-btn @click="dataLabel='confirmed'">Confirmed</v-btn>
   <v-btn @click="dataLabel='deaths'">Deaths</v-btn>
-  <v-row>
-    <v-col md4>
-      <v-menu
-        v-model="WhenStartedDate"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="190px"
-      >
-    <template v-slot:activator="{ on, attrs }">
-      <v-text-field
-        v-model="newEvent.whenStartedDate"
-        label="From"
-        readonly
-        v-bind="attrs"
-        v-on="on"
-      ></v-text-field>
-    </template>
-       <v-date-picker v-model="newEvent.whenStartedDate"></v-date-picker>
-      </v-menu>
-    </v-col>
-    <v-col md4>
-    </v-col>
-
-    <v-col md4>
-    <v-menu
-        v-model="WhenEndedDate"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="190px"
-    >
-    <template v-slot:activator="{ on, attrs }">
-      <v-text-field
-        v-model="newEvent.whenEndedDate"
-        label="To"
-        readonly
-        v-bind="attrs"
-        v-on="on"
-      ></v-text-field>
-    </template>
-      <v-date-picker v-model="newEvent.whenEndedDate"></v-date-picker>
-    </v-menu>
-    </v-col>
-    <v-col md4>
-    </v-col>
-</v-row>
-  <chart :data="$store.getters[dataLabel]" :labels="$store.getters.labels" :dataLabel="dataLabel"></chart>
+  <v-btn @click="filteredPeriod">Apply Date Filter</v-btn>
+  <v-btn @click="resetFields">Reset</v-btn>
+  <v-row >
+        <v-col cols="2">
+          <v-text-field v-model="startDate"  label="From" single-line>
+            <template v-slot:append-outer>
+              <date-picker v-model="startDate"/>
+            </template>
+          </v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field v-model="endDate"  label="To" single-line>
+            <template v-slot:append-outer>
+              <date-picker v-model="endDate"/>
+            </template>
+          </v-text-field>
+        </v-col>
+  </v-row>
+  <chart :data="$store.getters[dataLabel]" :labels="$store.getters.labels" :dataLabel="dataLabel" ></chart>
 </div>
 </template>
 
 <script>
 import Chart from '~/components/Chart.vue';
+import DatePicker from '~/components/DatePicker.vue';
 export default {
-    components: { Chart },
+    components: { Chart, DatePicker },
     created() {
       this.$store.dispatch('getCountry', this.$route.params.slug);
     },
-    data: vm => ({
-      dataLabel: 'confirmed',
-      date: new Date().toISOString().substr(0, 10),
-      dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-      menu1: false,
-      menu2: false,
-      WhenStartedDate: null,
-      WhenEndedDate: null,
-      newEvent: {
-      whenStartedDate: null
-    }
-  }),
+
+    data() {
+      return {
+        dataLabel: 'confirmed',
+        endDate: null,
+        startDate: null,
+      };
+    },
 
     computed: {
-       computedDateFormatted () {
-       return this.formatDate(this.date)
-      },
+      filteredPeriod() {
+      if (this.startDate != null & this.endDate != null ) {
+        // var startDate = new Date(this.startDate).toLocaleDateString();
+        // var endDate = new Date(this.endDate).toLocaleDateString();
+
+        // this.dataLabel = 'From: ' + startDate + ' To: ' + endDate;
+        }
+      }
     },
     watch: {
-    date (val) {
-      this.dateFormatted = this.formatDate(this.date)
+      // date (val) {
+      //   this.dateFormatted = this.formatDate(this.date)
+      // },
     },
-  },
 
-  methods: {
-    formatDate (date) {
-      if (!date) return null
-
-      const [year, month, day] = date.split('-')
-      return `${month}/${day}/${year}`
-    },
-    parseDate (date) {
-      if (!date) return null
-
-      const [month, day, year] = date.split('/')
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-     },
-   },
- }
+      methods: {
+         resetFields: function() {
+          this.startDate = '';
+          this.endDate = '';
+          // this.dataLabel = null;
+        }
+      }
+   }
 </script>
 
 <style>

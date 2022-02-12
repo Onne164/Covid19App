@@ -64,6 +64,14 @@ export default {
       set(value) {
         this.$store.commit('SET_SORT', value);
       }
+    },
+    filter: {
+      get() {
+        return this.$store.state.filter;
+      },
+      set(value) {
+        this.$store.commit('SET_FILTER', value);
+      }
     }
   }
 }

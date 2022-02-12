@@ -5,7 +5,7 @@
 <script>
 import { Loader } from "@googlemaps/js-api-loader"
 export default {
-  props: ['center', 'zoom', 'geoJson', 'mapStyle'],
+  props: ['center', 'zoom', 'geoJson', 'mapStyle', 'markers'],
   mounted() {
     const loader = new Loader({
       apiKey: this.$config.googleApiKey,
@@ -19,6 +19,10 @@ export default {
       });
       this.map.data.addGeoJson(this.geoJson);
       this.map.data.setStyle(this.mapStyle);
+      this.marker = new google.maps.Marker({
+        position: work,
+        map: map,
+      });
     });
   },
   data() {
@@ -38,6 +42,9 @@ export default {
     },
     mapStyle(mapStyle) {
       this.map.data.setStyle(mapStyle);
+    },
+    markers(start, destination) {
+
     }
   }
 }
