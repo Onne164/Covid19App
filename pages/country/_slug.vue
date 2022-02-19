@@ -29,42 +29,61 @@ import Chart from '~/components/Chart.vue';
 import DatePicker from '~/components/DatePicker.vue';
 export default {
     components: { Chart, DatePicker },
+
     created() {
       this.$store.dispatch('getCountry', this.$route.params.slug);
     },
 
-    data() {
-      return {
+    data: () => ({
         dataLabel: 'confirmed',
         endDate: null,
         startDate: null,
-      };
+        chart: null,
+        data: [],
+        labels: [],
+      }),
+
+    mounted() {
+
     },
-
     computed: {
-      filteredPeriod() {
-      if (this.startDate != null & this.endDate != null ) {
-        // var startDate = new Date(this.startDate).toLocaleDateString();
-        // var endDate = new Date(this.endDate).toLocaleDateString();
 
-        // this.dataLabel = 'From: ' + startDate + ' To: ' + endDate;
-        }
-      }
     },
     watch: {
-      // date (val) {
-      //   this.dateFormatted = this.formatDate(this.date)
-      // },
-    },
 
+    },
       methods: {
-         resetFields: function() {
+         resetFields() {
           this.startDate = '';
           this.endDate = '';
-          // this.dataLabel = null;
+        },
+        filteredPeriod(start, end) {
+          let startDate = new Date(this.startDate).toLocaleDateString();
+          let endDate = new Date(this.endDate).toLocaleDateString();
+
+          if (startDate != null & endDate != null ) {
+              let newLabels = [...this.$store.getters.labels];
+     
+              // get the index number in array
+              let indexStartDate = newLabels.indexOf(startDate);
+              let indexEndDate = newLabels.indexOf(endDate);
+              // console.log(indexStartDate);
+              // console.log(indexEndDate);
+
+              // slice the array only showing the selected period
+              let selectedPeriod = newLabels.slice(indexStartDate, indexEndDate + 1);
+              this.labels = selectedPeriod;
+
+
+              let newData = [...this.$store.getters[this.dataLabel]];
+              let filteredData = newData.slice(indexStartDate, indexEndDate + 1);
+
+              this.data = filteredData;
+
+          }
         }
-      }
-   }
+      }}
+
 </script>
 
 <style>

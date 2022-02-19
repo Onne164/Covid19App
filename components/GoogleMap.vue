@@ -19,15 +19,13 @@ export default {
       });
       this.map.data.addGeoJson(this.geoJson);
       this.map.data.setStyle(this.mapStyle);
-      this.marker = new google.maps.Marker({
-        position: work,
-        map: map,
+       // This event listener will call addMarker() when the map is clicked.
+
       });
-    });
-  },
+    },
   data() {
     return {
-      map: null
+      map: null,
     }
   },
   watch:{
@@ -43,10 +41,13 @@ export default {
     mapStyle(mapStyle) {
       this.map.data.setStyle(mapStyle);
     },
-    markers(start, destination) {
+    // markers(markers) {
+    //   this.map.data.markers(markers);
+    // }
+  },
+  methods: {
 
     }
-  }
 }
 </script>
 

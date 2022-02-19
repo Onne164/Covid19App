@@ -45,8 +45,8 @@ export const actions = {
   getCountry(context, slug){
     this.$axios.get('https://api.covid19api.com/country/' + slug, {
       params: {
-        from: '2020-03-01',
-        to: '2020-04-01'
+        from: '',
+        to: ''
       }
   }).then(response => {
           context.commit('SET_COUNTRY', response.data);
