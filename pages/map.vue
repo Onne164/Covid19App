@@ -6,23 +6,6 @@
   <v-btn @click="addMarkers">Add Markers</v-btn>
   <v-btn @click="clearMap">Clear Map</v-btn>
   <google-map :center="center" :zoom="zoom" :geoJson="covidGeoJson" :mapStyle="style" :key="styleProperty" :markers="markers"></google-map>
-  <!-- <GmapMap
-    :center="center"
-    :zoom="17"
-    map-type-id="terrain"
-    style="width: 1000px; height: 600px"
-  >
-  <GmapMarker
-    :key="index"
-     v-for="(m, index) in markers"
-    :position="m.position"
-    :clickable="true"
-    :draggable="true"
-    @click="center=m.position"
-  />
-  <gmap-polygon :paths="paths"></gmap-polygon>
-</GmapMap> -->
-
 </div>
 </template>
 
@@ -46,8 +29,13 @@ export default {
       zoom: 4,
       geoJson: null,
       styleProperty: 'confirmed',
+      currentPlace: null,
       markers: [],
     }
+  },
+  mounted() {
+
+
   },
    computed: {
     covidGeoJson(){
@@ -96,6 +84,7 @@ export default {
   },
   methods: {
     addMarkers() {
+
      this.markers = [
        {
          position: home,
@@ -105,14 +94,12 @@ export default {
        },
      ]
     },
+
     clearMap() {
        this.markers = [];
-    },
-
+       },
     }
-
-  }
-
+}
 </script>
 
 <style>

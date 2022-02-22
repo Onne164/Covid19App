@@ -19,7 +19,6 @@ export default {
       });
       this.map.data.addGeoJson(this.geoJson);
       this.map.data.setStyle(this.mapStyle);
-       // This event listener will call addMarker() when the map is clicked.
 
       });
     },
@@ -41,12 +40,19 @@ export default {
     mapStyle(mapStyle) {
       this.map.data.setStyle(mapStyle);
     },
-    // markers(markers) {
-    //   this.map.data.markers(markers);
-    // }
+
+    markers(newMarkers) {
+      newMarkers.forEach(marker => {
+        this.marker =  new google.maps.Marker({
+          position: {lat: 59.464697449279925, lng:24.8273948065468},
+          map: this.map,
+        });
+      });
+    }
+
+
   },
   methods: {
-
     }
 }
 </script>
