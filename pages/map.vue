@@ -1,26 +1,26 @@
 <template>
 <div>
   <v-btn @click="center={lat: 59.4268549, lng:24.7433906}; zoom=19">go to somewhere</v-btn>
-  <v-btn @click="styleProperty='deaths'">Deaths</v-btn>
-  <v-btn @click="styleProperty='confirmed'">Confirmed</v-btn>
+  <v-btn @click="callFunc">Deaths</v-btn>
+  <v-btn @click="callConfirmFunc">Confirmed</v-btn>
   <v-btn @click="addMarkers">Add Markers</v-btn>
   <v-btn @click="clearMap">Clear Map</v-btn>
-  <google-map :center="center" :zoom="zoom" :geoJson="covidGeoJson" :mapStyle="style" :key="styleProperty" :markers="markers"></google-map>
+  <google-map :center="center" :zoom="zoom" :geoJson="covidGeoJson" :mapStyle="style" :key="styleProperty" :markers="markers" :markerTool="addMarkerOn"></google-map>
 </div>
 </template>
 
 <script>
 import GoogleMap from "~/components/GoogleMap.vue"
-const home = {lat: 58.41, lng: 23.32};
-const work = {lat: 59.464697449279925, lng:24.8273948065468};
-
 export default {
   components: { GoogleMap },
+  async asyncData (context) {
+    const result  = await context.$axios.get('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+    context.store.dispatch('getSummary')
+    return {
+      geoJson: result.data
+    }
+  },
   created() {
-    this.$axios.get('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-      .then(response => {
-         this.geoJson = response.data;
-    });
     this.$store.dispatch('getSummary');
   },
   data() {
@@ -31,31 +31,33 @@ export default {
       styleProperty: 'confirmed',
       currentPlace: null,
       markers: [],
+      isavailable: true,
+      addMarkerOn: false,
     }
   },
-  mounted() {
 
-
-  },
    computed: {
     covidGeoJson(){
-      if(this.geoJson && this.$store.state.countries){
-        let covidGeoJson = {...this.geoJson};
-        covidGeoJson.features = covidGeoJson.features.map(feature => {
-          let country = this.$store.state.countries.find(country => {
-           return country.Country.toLowerCase() == feature.properties.name.toLowerCase()
+      if (this.isavailable) {
+        if(this.geoJson && this.$store.state.countries){
+          let covidGeoJson = {...this.geoJson};
+          covidGeoJson.features = covidGeoJson.features.map(feature => {
+            let country = this.$store.state.countries.find(country => {
+            return country.Country.toLowerCase() == feature.properties.name.toLowerCase()
+            });
+            feature.properties.confirmed = -1;
+            feature.properties.deaths = -1;
+            if(country){
+              feature.properties.confirmed = country.TotalConfirmed;
+              feature.properties.deaths = country.TotalDeaths;
+            }
+            return feature;
           });
-          feature.properties.confirmed = -1;
-          feature.properties.deaths = -1;
-          if(country){
-            feature.properties.confirmed = country.TotalConfirmed;
-            feature.properties.deaths = country.TotalDeaths;
-          }
-          return feature;
-        });
-        return covidGeoJson;
+          return covidGeoJson;
+        }
+      } else {
+        return null;
       }
-      return null;
     },
     style() {
        return (feature) => {
@@ -78,27 +80,35 @@ export default {
     }
 
   },
-  watch: {
 
-
-  },
   methods: {
     addMarkers() {
-
-     this.markers = [
-       {
-         position: home,
-       },
-       {
-         position: work,
-       },
-     ]
+      this.addMarkerOn = true
+      this.styleProperty++
     },
 
-    clearMap() {
-       this.markers = [];
-       },
-    }
+      clearMap() {
+        this.markers = [];
+        },
+      callFunc () {
+        this.addMarkerOn = false
+        this.styleProperty = 'deaths'
+        this.$axios.get('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+        .then(response => {
+          this.geoJson = response.data;
+        });
+        this.$store.dispatch('getSummary');
+      },
+        callConfirmFunc(){
+          this.styleProperty = 'confirmed'
+          this.addMarkerOn = false
+          this.$axios.get('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+        .then(response => {
+          this.geoJson = response.data;
+        });
+        this.$store.dispatch('getSummary');
+      }
+    },
 }
 </script>
 

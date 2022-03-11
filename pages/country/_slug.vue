@@ -20,7 +20,7 @@
           </v-text-field>
         </v-col>
   </v-row>
-  <chart :data="$store.getters[dataLabel]" :labels="$store.getters.labels" :dataLabel="dataLabel" ></chart>
+  <chart :data="$store.getters[dataLabel]" :labels="$store.getters.labels" :dataLabel="dataLabel" :key="chartKey" ></chart>
 </div>
 </template>
 
@@ -31,7 +31,13 @@ export default {
     components: { Chart, DatePicker },
 
     created() {
-      this.$store.dispatch('getCountry', this.$route.params.slug);
+      // console.log(this)
+      let passData = {
+          slug: this.$route.params.slug,
+          startDate: this.startDate,
+          endDate: this.endDate
+      }
+      this.$store.dispatch('getCountry', passData);
     },
 
     data: () => ({
@@ -41,6 +47,7 @@ export default {
         chart: null,
         data: [],
         labels: [],
+        chartKey: 0
       }),
 
     mounted() {
@@ -54,33 +61,25 @@ export default {
     },
       methods: {
          resetFields() {
-          this.startDate = '';
-          this.endDate = '';
-        },
-        filteredPeriod(start, end) {
-          let startDate = new Date(this.startDate).toLocaleDateString();
-          let endDate = new Date(this.endDate).toLocaleDateString();
-
-          if (startDate != null & endDate != null ) {
-              let newLabels = [...this.$store.getters.labels];
-     
-              // get the index number in array
-              let indexStartDate = newLabels.indexOf(startDate);
-              let indexEndDate = newLabels.indexOf(endDate);
-              // console.log(indexStartDate);
-              // console.log(indexEndDate);
-
-              // slice the array only showing the selected period
-              let selectedPeriod = newLabels.slice(indexStartDate, indexEndDate + 1);
-              this.labels = selectedPeriod;
-
-
-              let newData = [...this.$store.getters[this.dataLabel]];
-              let filteredData = newData.slice(indexStartDate, indexEndDate + 1);
-
-              this.data = filteredData;
-
+          this.startDate = null;
+          this.endDate = null;
+          let passData = {
+            slug: this.$route.params.slug,
+            startDate: this.startDate,
+            endDate: this.endDate
           }
+          this.$store.dispatch('getCountry', passData);
+        },
+        async filteredPeriod(start, end) {
+          if (this.startDate) {
+            let passData = {
+            slug: this.$route.params.slug,
+            startDate: this.startDate,
+            endDate: this.endDate
+          }
+          this.$store.dispatch('getCountry', passData);
+          }
+              this.chartKey++
         }
       }}
 

@@ -39,14 +39,15 @@ export const mutations = {
 export const actions = {
   getSummary(context) {
       this.$axios.get('https://api.covid19api.com/summary').then(response => {
+        // console.log(response.data, 'fromdispatch')
           context.commit('SET_COUNTRIES', response.data.Countries);
       });
   },
-  getCountry(context, slug){
-    this.$axios.get('https://api.covid19api.com/country/' + slug, {
+  getCountry(context, passData) {
+    this.$axios.get('https://api.covid19api.com/country/' + passData.slug, {
       params: {
-        from: '',
-        to: ''
+        from: passData.startDate ? passData.startDate : '',
+        to: passData.endDate ? passData.endDate : '',
       }
   }).then(response => {
           context.commit('SET_COUNTRY', response.data);

@@ -44,8 +44,8 @@ export default {
         data(newData) {
           this.chart.data.datasets[0].data = newData;
           this.chart.update();
-          console.log(this.chart);
-          console.log(newData);
+          // console.log(this.chart);
+          // console.log(newData);
         },
         labels(newLabels) {
           this.chart.data.labels = newLabels;
